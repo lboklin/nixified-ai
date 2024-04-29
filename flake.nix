@@ -11,7 +11,7 @@
       url = "github:NixOS/nixpkgs/2fd19c8be2551a61c1ddc3d9f86d748f4db94f00";
     };
     nixified-cfg = {
-      url = "github:lboklin/nixified-cfg";
+      url = "github:lboklin/nixified-cfg/comfyui-krita-requirements";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     invokeai-src = {
