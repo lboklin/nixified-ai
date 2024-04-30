@@ -8,7 +8,6 @@ let
   defaultGroup = defaultUser;
   service-name = "comfyui";
   mkComfyUIPackage = cfg: cfg.package.override {
-    modelsPath = "${cfg.dataPath}/models";
     inputPath = "${cfg.dataPath}/input";
     outputPath = "${cfg.dataPath}/output";
     customNodes = cfg.customNodes;

@@ -7,32 +7,31 @@
 , stdenv
 , symlinkJoin
 , config
-, modelsPath
+, models
+, customNodes
 , inputPath
 , outputPath
 , tempPath
 , userPath
-, customNodes
-, models
 }:
 
 let
 
   config-data = {
     comfyui = {
-      base_path = modelsPath;
-      checkpoints = "${modelsPath}/checkpoints";
-      clip = "${modelsPath}/clip";
-      clip_vision = "${modelsPath}/clip_vision";
-      configs = "${modelsPath}/configs";
-      controlnet = "${modelsPath}/controlnet";
-      embeddings = "${modelsPath}/embeddings";
-      inpaint = "${modelsPath}/inpaint";
-      ipadapters = "${modelsPath}/ipadapters";
-      loras = "${modelsPath}/loras";
-      upscale_models= "${modelsPath}/upscale_models";
-      vae = "${modelsPath}/vae";
-      vae_approx = "${modelsPath}/vae_approx";
+      base_path = "${models}";
+      checkpoints = "${models}/checkpoints";
+      clip = "${models}/clip";
+      clip_vision = "${models}/clip_vision";
+      configs = "${models}/configs";
+      controlnet = "${models}/controlnet";
+      embeddings = "${models}/embeddings";
+      inpaint = "${models}/inpaint";
+      ipadapters = "${models}/ipadapters";
+      loras = "${models}/loras";
+      upscale_models= "${models}/upscale_models";
+      vae = "${models}/vae";
+      vae_approx = "${models}/vae_approx";
     };
   };
 
@@ -41,7 +40,7 @@ let
     text = (lib.generators.toYAML {} config-data);
   };
 
-  pythonEnv = (python3.withPackages (ps: with ps; [
+  pythonEnv = python3.withPackages (ps: with ps; [
     torch
     # torchsde
     torchvision
@@ -58,7 +57,8 @@ let
     scipy
     psutil
     tqdm
-  ] ++ (builtins.concatMap (node: node.dependencies) customNodes)));
+  # FIXME: this doesn't work
+  ] ++ (builtins.concatMap (node: node.dependencies) customNodes));
 
   executable = writers.writeDashBin "comfyui" ''
     cd $out && \
@@ -69,10 +69,6 @@ let
       --temp-directory ${tempPath} \
       "$@"
   '';
-
-  customNodesCollection = (
-    linkFarm "comfyui-custom-nodes" (builtins.map (pkg: { name = pkg.pname; path = pkg; }) customNodes)
-  );
 in stdenv.mkDerivation rec {
   pname = "comfyui";
   version = "unstable-2024-04-15";
@@ -106,7 +102,7 @@ in stdenv.mkDerivation rec {
     ln -s ${outputPath} $out/output
     mkdir -p $out/${tempPath}
     echo "Setting up custom nodes"
-    ln -snf ${customNodesCollection} $out/custom_nodes
+    ln -snf ${customNodes} $out/custom_nodes
     echo "Copying executable script"
     cp ${executable}/bin/comfyui $out/bin/comfyui
     substituteInPlace $out/bin/comfyui --replace "\$out" "$out"
