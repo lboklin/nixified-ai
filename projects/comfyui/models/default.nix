@@ -832,7 +832,6 @@ in {
   };
 
   # https://huggingface.co/ByteDance/Hyper-SD
-
   hyper-sd15-1step = {
     installPath = "loras/Hyper-SD15-1step-lora.safetensors";
     src = fetchFromHuggingFace {
@@ -857,17 +856,28 @@ in {
     base = sdxl;
   };
 
-  # https://huggingface.co/ByteDance/Hyper-SD
-  hyper-sd15-8steps-cfg = {
-    installPath = "loras/Hyper-SD15-8steps-CFG-lora.safetensors";
+  hyper-sd15-4steps = {
+    installPath = "loras/Hyper-SD15-4steps-lora.safetensors";
     src = fetchFromHuggingFace {
       owner = "ByteDance";
       repo = "Hyper-SD";
-      resource = "Hyper-SD15-8steps-CFG-lora.safetensors";
-      sha256 = "sha256-9hI9W5UNUlCrbDNgDif03PcbMJnr+IhoXgHp6BF85II=";
+      resource = "Hyper-SD15-4steps-lora.safetensors";
+      sha256 = "sha256-xd0FhhZGHtUFPisU7sTb4/oO6jsTaIZC9tbIDqK6WVg=";
     };
     type = lora;
     base = sd15;
+  };
+
+  hyper-sdxl-4steps = {
+    installPath = "loras/Hyper-SDXL-4steps-lora.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "ByteDance";
+      repo = "Hyper-SD";
+      resource = "Hyper-SDXL-4steps-lora.safetensors";
+      sha256 = "sha256-EvgaJ9AKdRpA1o/RVZcJGJbFqQ871jL7bEdWB8va124=";
+    };
+    type = lora;
+    base = sdxl;
   };
 
   hyper-sd15-8steps = {
@@ -877,6 +887,30 @@ in {
       repo = "Hyper-SD";
       resource = "Hyper-SD15-8steps-lora.safetensors";
       sha256 = "sha256-kfwxhiNulW1k27Q1fy4SDGm5aLeK99LbmISlynTTzRM=";
+    };
+    type = lora;
+    base = sd15;
+  };
+
+  hyper-sdxl-8steps = {
+    installPath = "loras/Hyper-SDXL-8steps-lora.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "ByteDance";
+      repo = "Hyper-SD";
+      resource = "Hyper-SDXL-8steps-lora.safetensors";
+      sha256 = "sha256-ymiRkOjEYDhVA4S1Z1SIUmz+WkDTX4Kyest1wQD0F8E=";
+    };
+    type = lora;
+    base = sdxl;
+  };
+
+  hyper-sd15-8steps-cfg = {
+    installPath = "loras/Hyper-SD15-8steps-CFG-lora.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "ByteDance";
+      repo = "Hyper-SD";
+      resource = "Hyper-SD15-8steps-CFG-lora.safetensors";
+      sha256 = "sha256-9hI9W5UNUlCrbDNgDif03PcbMJnr+IhoXgHp6BF85II=";
     };
     type = lora;
     base = sd15;
@@ -894,13 +928,25 @@ in {
     base = sdxl;
   };
 
-  hyper-sdxl-8steps = {
-    installPath = "loras/Hyper-SDXL-8steps-lora.safetensors";
+  hyper-sd15-12steps-cfg = {
+    installPath = "loras/Hyper-SD15-12steps-CFG-lora.safetensors";
     src = fetchFromHuggingFace {
       owner = "ByteDance";
       repo = "Hyper-SD";
-      resource = "Hyper-SDXL-8steps-lora.safetensors";
-      sha256 = "sha256-ymiRkOjEYDhVA4S1Z1SIUmz+WkDTX4Kyest1wQD0F8E=";
+      resource = "Hyper-SD15-12steps-CFG-lora.safetensors";
+      sha256 = "sha256-ZLmENzg1N82Wj9pvh6BcMxYOzpx5/0dXlJoeIS/3g2E=";
+    };
+    type = lora;
+    base = sd15;
+  };
+
+  hyper-sdxl-12steps-cfg = {
+    installPath = "loras/Hyper-SDXL-12steps-CFG-lora.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "ByteDance";
+      repo = "Hyper-SD";
+      resource = "Hyper-SDXL-12steps-CFG-lora.safetensors";
+      sha256 = "sha256-C5f0R7WHgyOij758Ubp6zr0h9Nd1Urp3sEsRyJEYJbY=";
     };
     type = lora;
     base = sdxl;
