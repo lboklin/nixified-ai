@@ -225,7 +225,6 @@ in {
     #   pkgs = with python3Packages; [
     #   ];
     # };
-    meta.knownVulnerabilities = ["source repo contains tarball (https://github.com/dagthomas/comfyui_dagthomas/issues/13)"];
   };
 
   # https://github.com/LEv145/images-grid-comfy-plugin
