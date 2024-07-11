@@ -42,6 +42,25 @@
       }
       // args);
 in {
+  # https://github.com/Extraltodeus/ComfyUI-AutomaticCFG
+  # automatically adjusts CFG to avoid burns
+  # NOTE: while connected, your CFG won't be your CFG anymore. It is turned into a way to guide the CFG/final intensity/brightness/saturation.
+  automatic-cfg = mkComfyUICustomNodes {
+    pname = "comfyui-automatic-cfg";
+    version = "unstable-2024-07-10";
+    pyproject = true;
+    passthru.dependencies.pkgs = with python3Packages; [
+      colorama
+    ];
+    src = fetchFromGitHub {
+      owner = "Extraltodeus";
+      repo = "ComfyUI-AutomaticCFG";
+      rev = "8ce450233e833eb2c7bbb0471a3c7bf9e51665e6";
+      hash = "sha256-eq1GFcnSG8wRjdxCQwYFTvx/HItD5+VD0yA+CLHVP44=";
+      fetchSubmodules = true;
+    };
+  };
+
   # Generates masks for inpainting based on text prompts..
   # https://github.com/biegert/ComfyUI-CLIPSeg
   clipseg = mkComfyUICustomNodes {
