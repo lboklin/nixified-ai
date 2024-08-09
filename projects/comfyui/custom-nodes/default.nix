@@ -610,6 +610,19 @@ in {
     pname = "comfyui-tooling-nodes";
     version = "unstable-2024-06-20";
     pyproject = true;
+    installPhase = let
+      safety-checker = import <nix/fetchurl.nix> {
+        name = "model.safetensors";
+        url = "https://huggingface.co/CompVis/stable-diffusion-safety-checker/resolve/refs%2Fpr%2F41/model.safetensors";
+        sha256 = "sha256-CJAvGbHP69fJifFS/AUHvvaJjHBqkdZmUJODEiMktRE=";
+      };
+    in ''
+      runHook preInstall
+      mkdir -p $out/safetychecker
+      ${install}
+      ln -s ${safety-checker} $out/safetychecker/${safety-checker.name}
+      runHook postInstall
+    '';
     src = fetchFromGitHub {
       owner = "Acly";
       repo = "comfyui-tooling-nodes";
