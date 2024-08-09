@@ -54,7 +54,7 @@ in {
       sha256 = "sha256-h521I8MNO5AXFD1WcFAV4VostWKHYsEdCG/tlTir1/0=";
     };
     type = checkpoint;
-    base = sdxl;
+    base = sd15;
   };
 
   juggernautXL_version6Rundiffusion = {
@@ -266,6 +266,37 @@ in {
       repo = "sd_control_collection";
       resource = "sai_xl_canny_256lora.safetensors";
       sha256 = "sha256-ySaXIbH3BDYl51t94vZaYRayrZmJWWVJRhbz8shUj1Q=";
+    };
+    type = controlnet;
+    base = sdxl;
+  };
+
+  # A controlnet which supports many control types in condition text-to-image generation, such as:
+  # - Tile Deblur
+  # - Tile Variation
+  # - Tile Super Resolution
+  # - Image Inpainting
+  # - Image Outpainting
+  # - Openpose
+  # - Depth
+  # - Canny
+  # - Lineart
+  # - AnimeLineart
+  # - Mlsd
+  # - Scribble
+  # - Hed
+  # - Pidi(Softedge)
+  # - Teed
+  # - Segment
+  # - Normal
+  # https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/blob/main/diffusion_pytorch_model_promax.safetensors
+  xinsir-controlnet-union-sdxl-promax = {
+    installPath = "controlnet/xinsir-controlnet-union-sdxl-1.0-promax.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "xinsir";
+      repo = "controlnet-union-sdxl-1.0";
+      resource = "diffusion_pytorch_model_promax.safetensors";
+      sha256 = "sha256-n64uUMtDG/y+BYIrWewiKN9UXvJ/cR3qiUnp9O2ffNw=";
     };
     type = controlnet;
     base = sdxl;
