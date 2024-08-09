@@ -132,6 +132,7 @@ with builtins; let
         torch
         torchsde
         torchvision
+        torchaudio
         tqdm
         transformers
       ]
@@ -153,8 +154,8 @@ in
     src = fetchFromGitHub {
       owner = "comfyanonymous";
       repo = "ComfyUI";
-      rev = "605e64f6d3da44235498bf9103d7aab1c95ef211";
-      hash = "sha256-JU3SC1mnhsD+eD5eAX0RsEu0zoSxq8DfgR2RxX5ttb0=";
+      rev = "55ad9d5f8c8b906102313e894e471d2f5e833577";
+      hash = "sha256-f/39ai/Ufvhqnzm7ZLuCQKJKVlQrqhNDdxyLiMK2zl4=";
     };
 
     installPhase = ''
