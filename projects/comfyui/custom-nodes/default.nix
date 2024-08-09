@@ -411,13 +411,13 @@ in {
   # Provides nodes for doing better inpainting.
   inpaint-nodes = mkComfyUICustomNodes {
     pname = "comfyui-inpaint-nodes";
-    version = "unstable-2024-06-02";
+    version = "unstable-2024-08-09";
     pyproject = true;
     src = fetchFromGitHub {
       owner = "Acly";
       repo = "comfyui-inpaint-nodes";
-      rev = "8b800e41bd86ce8f47ec077c839f8b11e52872b2";
-      sha256 = "sha256-7WepT234aSMCiaUqiDBH/Xgd8ZvpEc/V5dG3Nld1ysI=";
+      rev = "69e5f2a0c2d475b83c3d4911f1786107d337bdcb";
+      sha256 = "sha256-bh52JG+Zee/5p/fHbn4Ajcofp1GqiNF8WlyurauaOZs=";
       fetchSubmodules = true;
     };
   };
@@ -642,7 +642,7 @@ in {
   # Make ComfyUI more friendly towards API usage.
   tooling-nodes = mkComfyUICustomNodes {
     pname = "comfyui-tooling-nodes";
-    version = "unstable-2024-06-20";
+    version = "unstable-2024-08-09";
     pyproject = true;
     installPhase = let
       safety-checker = import <nix/fetchurl.nix> {
@@ -660,8 +660,8 @@ in {
     src = fetchFromGitHub {
       owner = "Acly";
       repo = "comfyui-tooling-nodes";
-      rev = "aff32e8da6db5db73bc6f84b30c87862e211544c";
-      sha256 = "sha256-6i1PGog8ZNBwO9FDFjneWRCx8Cn6N1N1hZhzI64GLNk=";
+      rev = "d1dcf12f1007f3067b3128361dd5729d244fb25f";
+      sha256 = "sha256-6FPv+UutUkI5IQpL+4FDKLq5G2/zsRXd/YtiDjK2/Pc=";
       fetchSubmodules = true;
     };
   };
