@@ -260,7 +260,7 @@ in {
   };
 
   clip_vision-sd15 = {
-    installPath = "clip_vision/sd1.5/model.safetensors";
+    installPath = "clip_vision/clip-vision_vit-h.safetensors";
     src = fetchFromHuggingFace {
       owner = "h94";
       repo = "IP-Adapter";
@@ -396,6 +396,17 @@ in {
     base = sd15;
   };
 
+  control_lora_rank128_v11p_sd15_openpose_fp16 = {
+    installPath = "controlnet/control_lora_rank128_v11p_sd15_openpose_fp16.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "comfyanonymous";
+      repo = "ControlNet-v1-1_fp16_safetensors";
+      resource = "control_lora_rank128_v11p_sd15_openpose_fp16.safetensors";
+      sha256 = "sha256-bI7d4knmuW9smwUWokPXXritw4Yk7+FxqcirX7Gmlgg=";
+    };
+    type = controlnet;
+  };
+
   control_v11p_sd15_inpaint_fp16 = {
     installPath = "controlnet/control_v11p_sd15_inpaint_fp16.safetensors";
     src = fetchFromHuggingFace {
@@ -420,8 +431,8 @@ in {
     base = sd15;
   };
 
-  control_lora_rank128_v11p_sd15_scribble = {
-    installPath = "controlnet/control_lora_rank128_v11p_sd15_scribble.safetensors";
+  control_lora_rank128_v11p_sd15_scribble_fp16 = {
+    installPath = "controlnet/control_lora_rank128_v11p_sd15_scribble_fp16.safetensors";
     src = fetchFromHuggingFace {
       owner = "comfyanonymous";
       repo = "ControlNet-v1-1_fp16_safetensors";
@@ -432,13 +443,25 @@ in {
     base = sd15;
   };
 
-  control_lora_rank128_v11p_sd15_lineart = {
-    installPath = "controlnet/control_lora_rank128_v11p_sd15_lineart.safetensors";
+  control_lora_rank128_v11p_sd15_lineart_fp16 = {
+    installPath = "controlnet/control_lora_rank128_v11p_sd15_lineart_fp16.safetensors";
     src = fetchFromHuggingFace {
       owner = "comfyanonymous";
       repo = "ControlNet-v1-1_fp16_safetensors";
       resource = "control_lora_rank128_v11p_sd15_lineart_fp16.safetensors";
       sha256 = "sha256-nTqRttVaMSNIPesJ9xzFWKC9VOXsQUL1GHmE29LgmdE=";
+    };
+    type = controlnet;
+    base = sd15;
+  };
+
+  control_v11p_sd15_lineart_fp16 = {
+    installPath = "controlnet/control_v11p_sd15_lineart_fp16.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "comfyanonymous";
+      repo = "ControlNet-v1-1_fp16_safetensors";
+      resource = "control_v11p_sd15_lineart_fp16.safetensors";
+      sha256 = "sha256-EFWRBtG7gZYpi3qBVl7eknkpXSst8VFludvhiZlN71Y=";
     };
     type = controlnet;
     base = sd15;
@@ -456,6 +479,18 @@ in {
     base = sd15;
   };
 
+  control_v11p_sd15_softedge_fp16 = {
+    installPath = "controlnet/control_v11p_sd15_softedge_fp16.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "comfyanonymous";
+      repo = "ControlNet-v1-1_fp16_safetensors";
+      resource = "control_v11p_sd15_softedge_fp16.safetensors";
+      sha256 = "sha256-54/qW0WZ/sLs1+PxSxcf6ykLiCAMldVp7A/1mhm8NHg=";
+    };
+    type = controlnet;
+    base = sd15;
+  };
+
   control_lora_rank128_v11p_sd15_canny = {
     installPath = "controlnet/control_lora_rank128_v11p_sd15_canny.safetensors";
     src = fetchFromHuggingFace {
@@ -468,8 +503,20 @@ in {
     base = sd15;
   };
 
-  control_lora_rank128_v11f1p_sd15_depth = {
-    installPath = "controlnet/control_lora_rank128_v11f1p_sd15_depth.safetensors";
+  control_v11p_sd15_canny_fp16 = {
+    installPath = "controlnet/control_v11p_sd15_canny_fp16.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "comfyanonymous";
+      repo = "ControlNet-v1-1_fp16_safetensors";
+      resource = "control_v11p_sd15_canny_fp16.safetensors";
+      sha256 = "sha256-iTK2bhWq6DWzSQ2/mJ9WwlMQTO4IqIvyEoN2L1V8nxA=";
+    };
+    type = controlnet;
+    base = sd15;
+  };
+
+  control_lora_rank128_v11f1p_sd15_depth_fp16 = {
+    installPath = "controlnet/control_lora_rank128_v11f1p_sd15_depth_fp16.safetensors";
     src = fetchFromHuggingFace {
       owner = "comfyanonymous";
       repo = "ControlNet-v1-1_fp16_safetensors";
@@ -480,8 +527,8 @@ in {
     base = sd15;
   };
 
-  control_lora_rank128_v11p_sd15_normalbae = {
-    installPath = "controlnet/control_lora_rank128_v11p_sd15_normalbae.safetensors";
+  control_lora_rank128_v11p_sd15_normalbae_fp16 = {
+    installPath = "controlnet/control_lora_rank128_v11p_sd15_normalbae_fp16.safetensors";
     src = fetchFromHuggingFace {
       owner = "comfyanonymous";
       repo = "ControlNet-v1-1_fp16_safetensors";
@@ -542,8 +589,8 @@ in {
     base = sdxl;
   };
 
-  control_lora_rank128_v11p_sd15_seg = {
-    installPath = "controlnet/control_lora_rank128_v11p_sd15_seg.safetensors";
+  control_lora_rank128_v11p_sd15_seg_fp16 = {
+    installPath = "controlnet/control_lora_rank128_v11p_sd15_seg_fp16.safetensors";
     src = fetchFromHuggingFace {
       owner = "comfyanonymous";
       repo = "ControlNet-v1-1_fp16_safetensors";
@@ -579,8 +626,8 @@ in {
     base = sd15;
   };
 
-  control_sd15_inpaint_depth_hand = {
-    installPath = "controlnet/control_sd15_inpaint_depth_hand.safetensors";
+  control_sd15_inpaint_depth_hand_fp16 = {
+    installPath = "controlnet/control_sd15_inpaint_depth_hand_fp16.safetensors";
     src = fetchFromHuggingFace {
       owner = "hr16";
       repo = "ControlNet-HandRefiner-pruned";
