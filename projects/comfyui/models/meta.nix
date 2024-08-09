@@ -1,5 +1,6 @@
 {
   base-models = {
+    flux = "flux";
     sd15 = "sd15";
     sd3-medium = "sd3-medium";
     sdxl = "sdxl";

@@ -2,6 +2,32 @@
 with {inherit (import ./meta.nix) base-models model-types;}; let
   fetchFromUrl = import <nix/fetchurl.nix>;
 in {
+  # https://huggingface.co/Comfy-Org/flux1-schnell/resolve/main/flux1-schnell-fp8.safetensors
+  flux1-schnell-fp8 = {
+    installPath = "checkpoints/flux1-schnell-fp8.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "Comfy-Org";
+      repo = "flux1-schnell";
+      resource = "flux1-schnell-fp8.safetensors";
+      sha256 = "sha256-6tQmJ4tJAw6dpd+GKZTyXOlKsu5N84tVbd3bPbCTv3I=";
+    };
+    type = checkpoint;
+    base = flux;
+  };
+
+  # https://huggingface.co/Acly/SD-Checkpoints/resolve/main/flat2DAnimerge_v45Sharp.safetensors
+  flat2DAnimerge_v45Sharp = {
+    installPath = "checkpoints/flat2DAnimerge_v45Sharp.safetensors";
+    src = fetchFromHuggingFace {
+      owner = "Acly";
+      repo = "SD-Checkpoints";
+      resource = "flat2DAnimerge_v45Sharp.safetensors";
+      sha256 = "sha256-/pUGO6YLySmNYOslL5jQVwOdmoghWK/gQvJmvcGx5Sg=";
+    };
+    type = checkpoint;
+    base = sd15;
+  };
+
   # https://civitai.com/models/119229?modelVersionId=563988
   # Consider using DPM++ 3M SDE Exponential for this model
   # TIPS
