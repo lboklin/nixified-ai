@@ -39,6 +39,7 @@ in {
           # They're prebuilt and come with cuda support.
           (final: prev: {
             torch = prev.torch-bin;
+            torchaudio = prev.torchaudio-bin;
             torchvision = prev.torchvision-bin;
           })
           # use this when things stabilise and we feel ready to build the whole thing
