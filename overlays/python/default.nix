@@ -55,7 +55,6 @@ lib: {
 
   torchRocm = final: prev: {
     torch = prev.torch.override {
-      magma = prev.pkgs.magma-hip;
       cudaSupport = false;
       rocmSupport = true;
     };
@@ -63,7 +62,6 @@ lib: {
 
   torchCuda = final: prev: {
     torch = prev.torch.override {
-      magma = prev.pkgs.magma-cuda-static;
       cudaSupport = true;
       rocmSupport = false;
     };
