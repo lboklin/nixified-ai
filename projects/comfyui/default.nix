@@ -64,12 +64,18 @@ in {
     hospice = import ./hospice.nix {inherit lib typeFromInstallPath ecosystemOf baseModels;};
 
     # we require a python3 with an appropriately overridden package set depending on GPU
-    mkComfyUIVariant = python3: args:
-      pkgs.callPackage ./package.nix ({
-          inherit python3 comfyuiTypes;
-          inherit (hospice) mapCompatModelInstall;
-        }
-        // args);
+    mkComfyUIVariant = python3: args: pkgs.callPackage ./package.nix ({inherit python3;} // args);
+    mkModels = models:
+      import ./mk-models.nix {
+        inherit lib comfyuiTypes models;
+        inherit (pkgs) linkFarm;
+        inherit (hospice) mapCompatModelInstall;
+      };
+    mkCustomNodes = nodes:
+      import ./mk-custom-nodes.nix {
+        inherit lib comfyuiTypes nodes;
+        inherit (pkgs) linkFarm;
+      };
 
     # gpu-dependent packages
     pkgsFor = vendor:
@@ -77,16 +83,13 @@ in {
         # make available the python package set used so that user-defined custom nodes can depend on it
         python3Packages = python3Variants."${vendor}";
 
-        comfyui = mkComfyUIVariant python3Packages.python {
-          customNodes = {};
-          models = {};
-        };
+        comfyui = mkComfyUIVariant python3Packages.python {};
         krita-server = comfyui.override {
-          models = kritaModelInstalls.default;
-          customNodes = kritaCustomNodes;
+          modelsDrv = mkModels kritaModelInstalls.default;
+          customNodesDrv = mkCustomNodes kritaCustomNodes;
         };
-        krita-server-full = krita-server.override {models = kritaModelInstalls.full;};
-        krita-server-minimal = krita-server.override {models = kritaModelInstalls.required;};
+        krita-server-full = krita-server.override {modelsDrv = mkModels kritaModelInstalls.full;};
+        krita-server-minimal = krita-server.override {modelsDrv = mkModels kritaModelInstalls.required;};
 
         customNodes = import ./custom-nodes {
           inherit lib python3Packages;

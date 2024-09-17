@@ -76,7 +76,7 @@ in {
       ecosystem ? ecosystemOf base,
     } @ args:
       if !isNull file
-      then file
+      then lib.attrsets.recursiveUpdate {meta = {inherit type ecosystem base;};} file
       else
         fetchModel (
           lib.optionalAttrs (!isNull url) {
