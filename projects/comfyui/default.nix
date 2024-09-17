@@ -71,9 +71,9 @@ in {
         inherit (pkgs) linkFarm;
         inherit (hospice) mapCompatModelInstall;
       };
-    mkCustomNodes = nodes:
+    mkCustomNodes = customNodes:
       import ./mk-custom-nodes.nix {
-        inherit lib comfyuiTypes nodes;
+        inherit lib comfyuiTypes customNodes;
         inherit (pkgs) linkFarm;
       };
 

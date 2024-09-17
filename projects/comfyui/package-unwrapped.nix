@@ -28,7 +28,7 @@
         tqdm
         transformers
       ]
-      ++ dependencies.pkgs);
+      ++ customNodesDrv.passthru.dependencies.pkgs);
 
   executable = writers.writeDashBin "comfyui" ''
     ${pythonEnv}/bin/python $out/comfyui

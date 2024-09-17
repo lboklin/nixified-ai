@@ -17,14 +17,18 @@
     name = "extra_model_paths.yaml";
     text = lib.generators.toYAML {} (lib.optionalAttrs (!isNull modelsDrv) {
       comfyui = let
-        modelsDir = "${modelsDrv}";
         pathMap = path: rec {
-          name = builtins.head (lib.splitString "/" path);
-          value = "${modelsDir}/${name}";
+          name = lib.pipe path [
+            (lib.strings.replaceStrings ["${modelsDrv}/"] [""])
+            lib.strings.unsafeDiscardStringContext
+            (lib.splitString "/")
+            builtins.head
+          ];
+          value = modelsDrv + "/${name}";
         };
-        subdirs = builtins.map pathMap (lib.filesystem.listFilesRecursive "${modelsDrv}");
+        subdirs = builtins.map pathMap (lib.filesystem.listFilesRecursive modelsDrv);
       in
-        builtins.listToAttrs subdirs;
+        lib.traceValSeq (builtins.listToAttrs subdirs);
     });
   };
   comfyui = callPackage ./package-unwrapped.nix {
