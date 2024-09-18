@@ -26,7 +26,8 @@ in rec {
       description = "custom node python package";
     };
   installPath =
-    # probably should have an extension as well, but don't want to assume too much
+    # TODO: from https://github.com/comfyanonymous/ComfyUI/blob/master/folder_paths.py#L10C1-L11C1
+    # supported_pt_extensions: set[str] = {'.ckpt', '.pt', '.bin', '.pth', '.safetensors', '.pkl', '.sft'}
     t.strMatching ".*/.*"
     // {
       name = "installPath";

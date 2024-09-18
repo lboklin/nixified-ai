@@ -17,12 +17,13 @@
     inherit python3 customNodesDrv;
   };
 
-  extraModelPathsYaml = writeTextFile {
+  # FIXME: this prints a custom node dir that is not empty, yet the yaml file does not contain it
+  extraModelPathsYaml = lib.trace customNodesDrv.outPath writeTextFile {
     name = "extra_model_paths.yaml";
     text = lib.generators.toYAML {} ({
-        comfyui = lib.optionalAttrs (!isNull customNodesDrv) {
-          # base_path = basePath;
-          custom_nodes = "${customNodesDrv}";
+        comfyui = {
+          base_path = basePath;
+          custom_nodes = customNodesDrv;
         };
       }
       // lib.optionalAttrs (!isNull modelsDrv) {
@@ -57,26 +58,3 @@ in
       unwrappedWithDeps.passthru
       // {inherit customNodesDrv modelsDrv;};
   }
-# stdenv.mkDerivation {
-#   pname = "comfyui";
-#   inherit (comfyui-unwrapped) version;
-#   installPhase = ''
-#     runHook preInstall
-#     echo "Preparing bin folder"
-#     mkdir -p $out/bin/
-#     echo "Copying ${extraModelPathsYaml} to $out"
-#     cp ${extraModelPathsYaml} $out/extra_model_paths.yaml
-#     echo "Setting up custom nodes"
-#     ${lib.optionalString (!isNull customNodesDrv) "ln -snf ${customNodesDrv} $out/custom_nodes"}
-#     echo "Copying executable script"
-#     cp ${executable}/bin/comfyui $out/bin/comfyui
-#     runHook postInstall
-#   '';
-#   meta = with lib; {
-#     homepage = "https://github.com/comfyanonymous/ComfyUI";
-#     description = "The most powerful and modular stable diffusion GUI with a graph/nodes interface.";
-#     license = licenses.gpl3;
-#     platforms = platforms.all;
-#   };
-# }
-

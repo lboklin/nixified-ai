@@ -86,6 +86,10 @@ in {
     pkgsFor = vendor: let
       python3Packages = python3Variants."${vendor}";
       python3 = python3Packages.python;
+      customNodePkgs = import ./custom-nodes {
+        inherit lib python3Packages;
+        inherit (pkgs) stdenv fetchFromGitHub fetchzip writeText;
+      };
     in
       rec {
         # make available the python package set used so that user-defined custom nodes can depend on it
@@ -94,16 +98,13 @@ in {
           inherit python3;
           customNodesDrv = mkCustomNodes {};
         };
-        comfyuiWithNodes = customNodes:
+        comfyuiWithNodes = f:
           pkgs.callPackage ./package.nix {
             inherit comfyui-unwrapped python3;
-            customNodesDrv = mkCustomNodes (lib.traceValFn (builtins.attrNames) customNodes);
+            customNodesDrv = lib.traceValFn (x: x.outPath) (mkCustomNodes (f customNodePkgs));
           };
 
-        customNodes = import ./custom-nodes {
-          inherit lib python3Packages;
-          inherit (pkgs) stdenv fetchFromGitHub fetchzip writeText;
-        };
+        customNodes = customNodePkgs;
         # subset of `customNodes` used by Krita plugin
         kritaCustomNodes = {
           inherit
@@ -117,7 +118,7 @@ in {
             ;
         };
         kritaCustomNodesDrv = mkCustomNodes kritaCustomNodes;
-        comfyui = comfyuiWithNodes {};
+        comfyui = comfyuiWithNodes (nodes: {});
         krita-server = comfyui.override {
           modelsDrv = mkModels kritaModelInstalls.default;
           customNodesDrv = mkCustomNodes kritaCustomNodes;
