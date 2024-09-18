@@ -17,30 +17,32 @@
     inherit python3 customNodesDrv;
   };
 
-  # FIXME: this prints a custom node dir that is not empty, yet the yaml file does not contain it
-  extraModelPathsYaml = lib.trace customNodesDrv.outPath writeTextFile {
+  extraModelPathsYaml = writeTextFile {
     name = "extra_model_paths.yaml";
-    text = lib.generators.toYAML {} ({
-        comfyui = {
-          base_path = basePath;
-          custom_nodes = customNodesDrv;
-        };
-      }
-      // lib.optionalAttrs (!isNull modelsDrv) {
-        comfyui = let
-          pathMap = path: rec {
-            name = lib.pipe path [
-              (lib.strings.replaceStrings ["${modelsDrv}/"] [""])
-              lib.strings.unsafeDiscardStringContext
-              (lib.splitString "/")
-              builtins.head
-            ];
-            value = modelsDrv + "/${name}";
+    text =
+      lib.generators.toYAML {}
+      (lib.attrsets.recursiveUpdate
+        (lib.optionalAttrs (!isNull customNodesDrv) {
+          comfyui = {
+            base_path = basePath;
+            custom_nodes = customNodesDrv;
           };
-          subdirs = builtins.map pathMap (lib.filesystem.listFilesRecursive modelsDrv);
-        in
-          builtins.listToAttrs subdirs;
-      });
+        })
+        (lib.optionalAttrs (!isNull modelsDrv) {
+          comfyui = let
+            pathMap = path: rec {
+              name = lib.pipe path [
+                (lib.strings.replaceStrings ["${modelsDrv}/"] [""])
+                lib.strings.unsafeDiscardStringContext
+                (lib.splitString "/")
+                builtins.head
+              ];
+              value = modelsDrv + "/${name}";
+            };
+            subdirs = builtins.map pathMap (lib.filesystem.listFilesRecursive modelsDrv);
+          in
+            builtins.listToAttrs subdirs;
+        }));
   };
   executable = writeScriptBin "comfyui" ''
     ${unwrappedWithDeps}/bin/comfyui \
