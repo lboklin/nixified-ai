@@ -50,46 +50,55 @@ in {
     };
 
     inherit (self'.legacyPackages.air) fetchair modelTypes ecosystemOf ecosystems baseModels;
-    inherit
-      (import ./model-installers.nix {
-        inherit lib fetchair ecosystemOf modelTypes;
-        inherit (pkgs) fetchurl;
-      })
-      installModels
-      typeFromInstallPath
-      ;
     comfyuiTypes = import ./types.nix {inherit lib;};
+    modelInstallers = import ./model-installers.nix {
+      inherit lib fetchair ecosystemOf modelTypes;
+      inherit (pkgs) fetchurl;
+    };
+    inherit (modelInstallers) installModels typeFromInstallPath;
     kritaModelInstalls = import ./krita-models.nix {inherit installModels ecosystems baseModels;};
 
     hospice = import ./hospice.nix {inherit lib typeFromInstallPath ecosystemOf baseModels;};
 
-    # we require a python3 with an appropriately overridden package set depending on GPU
-    mkComfyUIVariant = python3: args: pkgs.callPackage ./package.nix ({inherit python3;} // args);
     mkModels = models:
       import ./mk-models.nix {
         inherit lib comfyuiTypes models;
         inherit (pkgs) linkFarm;
         inherit (hospice) mapCompatModelInstall;
       };
-    mkCustomNodes = customNodes:
-      import ./mk-custom-nodes.nix {
-        inherit lib comfyuiTypes customNodes;
-        inherit (pkgs) linkFarm;
-      };
+    mkCustomNodes = customNodes: (import ./mk-custom-nodes.nix {
+      inherit lib comfyuiTypes customNodes;
+      inherit (pkgs) linkFarm;
+    });
+
+    # comfyuiWithNodeDeps = python3: customNodesDrv: let
+    #   extraPythonDeps = customNodesDrv.passthru.dependencies.pkgs or [];
+    # in
+    #   pkgs.callPackage ./package-unwrapped.nix {
+    #     python3 =
+    #       python3
+    #       // {
+    #         withPackages = f: python3.withPackages (ps: f ps ++ extraPythonDeps);
+    #       };
+    #   };
 
     # gpu-dependent packages
-    pkgsFor = vendor:
+    pkgsFor = vendor: let
+      python3Packages = python3Variants."${vendor}";
+      python3 = python3Packages.python;
+    in
       rec {
         # make available the python package set used so that user-defined custom nodes can depend on it
-        python3Packages = python3Variants."${vendor}";
 
-        comfyui = mkComfyUIVariant python3Packages.python {};
-        krita-server = comfyui.override {
-          modelsDrv = mkModels kritaModelInstalls.default;
-          customNodesDrv = mkCustomNodes kritaCustomNodes;
+        comfyui-unwrapped = pkgs.callPackage ./package-unwrapped.nix {
+          inherit python3;
+          customNodesDrv = mkCustomNodes {};
         };
-        krita-server-full = krita-server.override {modelsDrv = mkModels kritaModelInstalls.full;};
-        krita-server-minimal = krita-server.override {modelsDrv = mkModels kritaModelInstalls.required;};
+        comfyuiWithNodes = customNodes:
+          pkgs.callPackage ./package.nix {
+            inherit comfyui-unwrapped python3;
+            customNodesDrv = mkCustomNodes (lib.traceValFn (builtins.attrNames) customNodes);
+          };
 
         customNodes = import ./custom-nodes {
           inherit lib python3Packages;
@@ -107,6 +116,14 @@ in {
             ultimate-sd-upscale
             ;
         };
+        kritaCustomNodesDrv = mkCustomNodes kritaCustomNodes;
+        comfyui = comfyuiWithNodes {};
+        krita-server = comfyui.override {
+          modelsDrv = mkModels kritaModelInstalls.default;
+          customNodesDrv = mkCustomNodes kritaCustomNodes;
+        };
+        krita-server-full = krita-server.override {modelsDrv = mkModels kritaModelInstalls.full;};
+        krita-server-minimal = krita-server.override {modelsDrv = mkModels kritaModelInstalls.required;};
       }
       # include all other packages as well to make it more convenient
       // builtins.removeAttrs self'.legacyPackages.comfyui ["amd" "nvidia"];

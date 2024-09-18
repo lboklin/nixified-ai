@@ -1,17 +1,13 @@
 {
   lib,
   python3,
-  writers,
+  customNodesDrv,
   fetchFromGitHub,
   stdenv,
-  extraModelPathsYaml ? lib.generators.toYAML {} {},
-  customNodesDrv ? null,
-  basePath ? "/var/lib/comfyui",
-  userPath ? "${basePath}/user",
 }: let
-  pythonEnv = python3.withPackages (ps:
-    with ps;
-      [
+  pythonEnv = python3.withPackages (
+    ps:
+      (with ps; [
         aiohttp
         einops
         kornia
@@ -27,22 +23,20 @@
         torchaudio
         tqdm
         transformers
-      ]
-      ++ customNodesDrv.passthru.dependencies.pkgs);
-
-  executable = writers.writeDashBin "comfyui" ''
-    ${pythonEnv}/bin/python $out/comfyui
-  '';
+      ])
+      ++ customNodesDrv.passthru.dependencies.pkgs or []
+  );
 in
   stdenv.mkDerivation {
-    pname = "comfyui";
-    version = "unstable-2024-09-09";
+    pname = "comfyui-unwrapped";
+    version = "unstable-2024-09-18";
 
+    # src = /data/lore/AI/ComfyUI;
     src = fetchFromGitHub {
       owner = "comfyanonymous";
       repo = "ComfyUI";
-      rev = "cd4955367e4170b88ba839efccb6d2ed0dd963ad";
-      hash = "sha256-oEjsPznZxfTxT+m7Uvbsn+/ZiNAROfeUQMHNgYOAkvU=";
+      rev = "7183fd1665e88c13184a11d7ec06f56307b4fa7f";
+      hash = "sha256-kap3fJObcqSGV7S4fJ+Yhg44vHjSkOLWKSuZdrAJf5E=";
     };
 
     installPhase = ''
@@ -61,20 +55,20 @@ in
       cp -r $src/api_server $out/
       cp -r $src/app $out/
       cp -r $src/web $out/
+      cp -r $src/utils $out/
       cp -r $src/*.py $out/
-      mv $out/main.py $out/comfyui
-      echo "Copying ${extraModelPathsYaml} to $out"
-      cp ${extraModelPathsYaml} $out/extra_model_paths.yaml
-      echo "Setting up custom nodes"
-      ${lib.optionalString (!isNull customNodesDrv) "ln -snf ${customNodesDrv} $out/custom_nodes"}
       echo "Copying executable script"
-      cp ${executable}/bin/comfyui $out/bin/comfyui
-      substituteInPlace $out/bin/comfyui --replace-warn "\$out" "$out"
-      echo "Patching python code..."
-      substituteInPlace $out/folder_paths.py --replace-warn "if not os.path.exists(input_directory):" "if False:"
-      substituteInPlace $out/folder_paths.py --replace-warn 'os.path.join(os.path.dirname(os.path.realpath(__file__)), "user")' '"${userPath}"'
+      echo "${pythonEnv}/bin/python $out/main.py" > $out/bin/comfyui
+      chmod +x $out/bin/comfyui
+      cp -r $src/custom_nodes $out/
+      substituteInPlace $out/server.py --replace-warn "from app.user_manager import UserManager" ""
+      substituteInPlace $out/server.py --replace-warn "self.user_manager = UserManager()" \
+        'logging.info("User Manager disabled: not applicable when using nix")'
+      substituteInPlace $out/server.py --replace-warn "self.user_manager.add_routes(self.routes)" ""
       runHook postInstall
     '';
+
+    passthru.python = pythonEnv;
 
     meta = with lib; {
       homepage = "https://github.com/comfyanonymous/ComfyUI";
