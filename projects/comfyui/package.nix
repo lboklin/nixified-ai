@@ -57,6 +57,7 @@ in
   executable
   // {
     passthru =
+      builtins.trace customNodesDrv.outPath
       unwrappedWithDeps.passthru
       // {inherit customNodesDrv modelsDrv;};
   }

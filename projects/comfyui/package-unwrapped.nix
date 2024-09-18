@@ -31,12 +31,11 @@ in
     pname = "comfyui-unwrapped";
     version = "unstable-2024-09-18";
 
-    # src = /data/lore/AI/ComfyUI;
     src = fetchFromGitHub {
-      owner = "comfyanonymous";
+      owner = "lboklin";
       repo = "ComfyUI";
-      rev = "7183fd1665e88c13184a11d7ec06f56307b4fa7f";
-      hash = "sha256-kap3fJObcqSGV7S4fJ+Yhg44vHjSkOLWKSuZdrAJf5E=";
+      rev = "a5307b2990f0be0488628c1baa8237e04b38c3fb";
+      hash = "sha256-r1ZUBeawInFv9iKmPxB0P5bXm5rGlpvk72fYwo1TSU0=";
     };
 
     installPhase = ''
@@ -58,7 +57,7 @@ in
       cp -r $src/utils $out/
       cp -r $src/*.py $out/
       echo "Copying executable script"
-      echo "${pythonEnv}/bin/python $out/main.py" > $out/bin/comfyui
+      echo "${pythonEnv}/bin/python $out/main.py \$@" > $out/bin/comfyui
       chmod +x $out/bin/comfyui
       cp -r $src/custom_nodes $out/
       substituteInPlace $out/server.py --replace-warn "from app.user_manager import UserManager" ""
