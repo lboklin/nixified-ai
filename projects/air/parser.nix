@@ -1,4 +1,8 @@
-{lib}: urn: let
+{
+  lib,
+  modelTypes,
+  ecosystems,
+}: urn: let
   orNull = p: x:
     if p x
     then x
@@ -30,14 +34,13 @@
       (x: lib.throwIf (isNull x) "invalid AIR: ${urn}" x)
     ];
   part = builtins.elemAt parts;
-  constants = import ./constants.nix {inherit lib;};
 in {
   ecosystem =
     lib.lists.findSingle (x: x.urn == part 0) null (throw "more than one ecosystem with the name ${part 0}")
-    (builtins.attrValues constants.ecosystems);
+    (builtins.attrValues ecosystems);
   type =
     lib.lists.findSingle (x: x.urn == part 1) null (throw "more than one type with the name ${part 1}")
-    (builtins.attrValues constants.modelTypes);
+    (builtins.attrValues modelTypes);
   source = part 2;
   model = part 3;
   version = part 4;

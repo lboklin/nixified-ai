@@ -37,12 +37,17 @@ in
         # ex:
         # AIR: urn:air:sdxl:vae:huggingface:stabilityai/sdxl-vae@sdxl_vae.safetensors
         # URL: https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors?download=true
-        # WARN: AIR does not support '/' in versions (such as resources in subdirectories), nor '.' in version ids (e.g. filenames with more than one '.')
-        # I don't know which is more disappointing: huggingface's lack of unique resource ids or AIR's design.
+        # WARN.
+        #   AIR does not support '/' in versions (such as resources in subdirectories).
+        #   This means that for a resource in a repo's subdirectory, the path is appended as if part of the model's name, e.g.
+        #     urn:air:flux1:lora:huggingface:owner/repo/path/to/subdir@model.safetensors
+        #   But worse, '.' may not occur *anywhere* except at the end to denote file extension (format),
+        #   so resources such as "inpaint_v26.fooocus.patch" simply can not have an AIR constructed for them.
         let
           spl = lib.strings.splitString "/" parsed.model;
           owner =
-            lib.throwIf (builtins.length spl < 2) "huggingface AIR requires that the model id is of the format <repo-owner>/<repo-name>"
+            lib.throwIf (builtins.length spl < 2)
+            "huggingface AIR requires that the model id is of the format <repo-owner>/<repo-name>[/<path/to/subdir>]"
             (builtins.head spl);
           repo = builtins.elemAt spl 1;
           # this pattern is quite hacky and unintuitive
@@ -53,8 +58,10 @@ in
         in "https://${parsed.source}.co/${owner}/${repo}/resolve/main/${resource}?download=true"
       else lib.throw "support for constructing URL from AIR with ${parsed.source} as source has not been added yet";
 
-    name = with parsed; lib.strings.sanitizeDerivationName "${ecosystem.urn}-${type.urn}-${model}-${version}";
+    # content-addressed name to prevent redownload if irrelevant details like source or metadata changes
+    name = sha256;
     authAttr = lib.optionalAttrs (!(isNull authToken)) {curlOptsList = ["--header" "Authorization: Bearer ${authToken}"];};
+    fetchArgs = {inherit name url sha256;} // authAttr;
     metaAttr = {
       meta =
         {
@@ -63,12 +70,11 @@ in
         }
         // (
           if (parsed.source == "civitai")
-          then {homepage = with parsed; "https://${source}.com/models/${model}?modelVersionId=${version}";}
+          then {homepage = "https://${parsed.source}.com/models/${parsed.model}?modelVersionId=${parsed.version}";}
           else if (parsed.source == "huggingface")
           then {homepage = lib.strings.replaceStrings ["resolve/" "?download=true"] ["blob/" ""] url;}
           else {}
         );
     };
   in
-    fetchurl ({inherit name url sha256;} // authAttr)
-    // metaAttr
+    fetchurl fetchArgs // metaAttr

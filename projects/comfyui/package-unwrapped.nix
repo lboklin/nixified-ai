@@ -32,10 +32,10 @@ in
     version = "unstable-2024-09-18";
 
     src = fetchFromGitHub {
-      owner = "lboklin";
+      owner = "comfyanonymous";
       repo = "ComfyUI";
-      rev = "a5307b2990f0be0488628c1baa8237e04b38c3fb";
-      hash = "sha256-r1ZUBeawInFv9iKmPxB0P5bXm5rGlpvk72fYwo1TSU0=";
+      rev = "7183fd1665e88c13184a11d7ec06f56307b4fa7f";
+      hash = "sha256-kap3fJObcqSGV7S4fJ+Yhg44vHjSkOLWKSuZdrAJf5E=";
     };
 
     installPhase = ''

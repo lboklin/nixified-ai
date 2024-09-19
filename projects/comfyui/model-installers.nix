@@ -11,24 +11,25 @@
     air ? lib.throwIf (isNull url) "fetchModel: either url or air is required (sha256: ${sha256})" null,
     sha256,
     authToken ? null,
-    name ? lib.mapNullable lib.strings.sanitizeDerivationName url,
     type ? null,
     base ? null,
     ecosystem ? null,
   }: let
     warnUnused = attrs: let
-      nn = builtins.concatStringsSep ", " (builtins.attrNames (lib.attrsets.filterAttrs (k: v: !isNull v) attrs));
+      nonNull = lib.attrsets.filterAttrs (k: v: !isNull v) attrs;
     in
-      lib.warnIfNot (nn == "")
-      "fetchModel (air: ${air}): unused arguments: ${nn}";
+      lib.warnIfNot (nonNull == {})
+      "fetchModel (air: ${air}): unused arguments: ${builtins.concatStringsSep ", " (builtins.attrNames nonNull)}";
+    # content-addressed name to prevent redownload if source changes
+    name = sha256;
   in
     lib.attrsets.recursiveUpdate
     {meta = {inherit type base ecosystem;};}
     (
-      if !(isNull air || isNull url)
+      if isNull air && isNull url
       then lib.throw "fetchModel: choose one, not both:\nair: ${air}\nurl: ${url}"
       else if !isNull air
-      then warnUnused {inherit ecosystem type name;} (fetchair {inherit air sha256 authToken;})
+      then warnUnused {inherit ecosystem type;} (fetchair {inherit air sha256 authToken;})
       else if isNull authToken || authToken == ""
       then import <nix/fetchurl.nix> {inherit name url sha256;}
       else
@@ -69,19 +70,21 @@ in {
       file ? null,
       air ? null,
       url ? null,
-      name ? null,
-      sha256 ? lib.throwIf (isNull file) "installModels (installPath: ${installPath}): sha256 is required for remote resources",
-      type ? typeFromInstallPath installPath,
+      sha256 ?
+        lib.throwIf (isNull file)
+        "installModels (installPath: ${installPath}): sha256 is required for remote resources"
+        null,
+      type ? null,
       base ? null,
-      ecosystem ? ecosystemOf base,
+      ecosystem ? null,
     } @ args:
-      if !isNull file
+      if !isNull file # nothing to fetch
       then lib.attrsets.recursiveUpdate {meta = {inherit type ecosystem base;};} file
       else
         fetchModel (
-          lib.optionalAttrs (!isNull url) {
-            name = lib.strings.sanitizeDerivationName url;
-            inherit type ecosystem;
+          lib.optionalAttrs (isNull air) {
+            type = typeFromInstallPath installPath;
+            ecosystem = ecosystemOf base;
           }
           // args
         )

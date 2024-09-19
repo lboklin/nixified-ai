@@ -6,21 +6,21 @@
     system,
     ...
   }: let
-    parseAIR = import ./parser.nix {inherit lib;};
+    constants = import ./constants.nix {inherit lib;};
+    parseAIR = import ./parser.nix {
+      inherit lib;
+      inherit (constants) modelTypes ecosystems;
+    };
+    fetchair = import ./fetcher.nix {
+      inherit lib parseAIR;
+      fetchurl = args:
+        if builtins.hasAttr "curlOptsList" args
+        then pkgs.fetchurl args
+        else import <nix/fetchurl.nix> args;
+    };
   in {
     legacyPackages = {
-      air =
-        {
-          fetchair = import ./fetcher.nix {
-            inherit lib parseAIR;
-            fetchurl = args:
-              if builtins.hasAttr "curlOptsList" args
-              then pkgs.fetchurl args
-              else import <nix/fetchurl.nix> args;
-          };
-          inherit parseAIR;
-        }
-        // import ./constants.nix {inherit lib;};
+      air = {inherit parseAIR fetchair;} // constants;
     };
   };
 }
