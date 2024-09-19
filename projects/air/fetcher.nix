@@ -58,8 +58,8 @@ in
         in "https://${parsed.source}.co/${owner}/${repo}/resolve/main/${resource}?download=true"
       else lib.throw "support for constructing URL from AIR with ${parsed.source} as source has not been added yet";
 
-    # content-addressed name to prevent redownload if irrelevant details like source or metadata changes
-    name = sha256;
+    # generic name to keep resources content-addressed
+    name = "resource";
     authAttr = lib.optionalAttrs (!(isNull authToken)) {curlOptsList = ["--header" "Authorization: Bearer ${authToken}"];};
     fetchArgs = {inherit name url sha256;} // authAttr;
     metaAttr = {

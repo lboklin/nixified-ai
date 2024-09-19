@@ -20,12 +20,9 @@
     in
       lib.warnIfNot (nonNull == {})
       "fetchModel (air: ${air}): unused arguments: ${builtins.concatStringsSep ", " (builtins.attrNames nonNull)}";
-    # content-addressed name to prevent redownload if source changes
-    name = sha256;
-  in
-    lib.attrsets.recursiveUpdate
-    {meta = {inherit type base ecosystem;};}
-    (
+    # generic name to keep resources content-addressed
+    name = "resource";
+    fetched =
       if isNull air && isNull url
       then lib.throw "fetchModel: choose one, not both:\nair: ${air}\nurl: ${url}"
       else if !isNull air
@@ -36,8 +33,9 @@
         fetchurl {
           inherit name url sha256;
           curlOptsList = ["--header" "Authorization: Bearer ${authToken}"];
-        }
-    );
+        };
+  in
+    lib.recursiveUpdate {meta = {inherit type base ecosystem;};} fetched;
 
   # using the AIR spec and observed patterns of comfyui model installations as reference
   dirModelTypeMap = {
