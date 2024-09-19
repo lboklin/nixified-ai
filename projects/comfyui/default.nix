@@ -71,17 +71,6 @@ in {
       inherit (pkgs) linkFarm;
     });
 
-    # comfyuiWithNodeDeps = python3: customNodesDrv: let
-    #   extraPythonDeps = customNodesDrv.passthru.dependencies.pkgs or [];
-    # in
-    #   pkgs.callPackage ./package-unwrapped.nix {
-    #     python3 =
-    #       python3
-    #       // {
-    #         withPackages = f: python3.withPackages (ps: f ps ++ extraPythonDeps);
-    #       };
-    #   };
-
     # gpu-dependent packages
     pkgsFor = vendor: let
       python3Packages = python3Variants."${vendor}";
@@ -93,16 +82,12 @@ in {
     in
       rec {
         # make available the python package set used so that user-defined custom nodes can depend on it
+        inherit mkCustomNodes mkModels python3Packages;
 
         comfyui-unwrapped = pkgs.callPackage ./package-unwrapped.nix {
           inherit python3;
           customNodesDrv = mkCustomNodes {};
         };
-        comfyuiWithNodes = f:
-          pkgs.callPackage ./package.nix {
-            inherit comfyui-unwrapped python3;
-            customNodesDrv = lib.traceValFn (x: x.outPath) (mkCustomNodes (f customNodePkgs));
-          };
 
         customNodes = customNodePkgs;
         # subset of `customNodes` used by Krita plugin
@@ -118,7 +103,10 @@ in {
             ;
         };
         kritaCustomNodesDrv = mkCustomNodes kritaCustomNodes;
-        comfyui = comfyuiWithNodes (nodes: {});
+        comfyui = pkgs.callPackage ./package.nix {
+          inherit comfyui-unwrapped python3;
+          customNodesDrv = mkCustomNodes {};
+        };
         krita-server = comfyui.override {
           modelsDrv = mkModels kritaModelInstalls.default;
           customNodesDrv = mkCustomNodes kritaCustomNodes;

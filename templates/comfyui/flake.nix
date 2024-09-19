@@ -30,7 +30,14 @@
         vendor = "nvidia";
         comfyPkgs = inputs'.nixified-ai.legacyPackages.comfyui."${vendor}";
         models = import ./models.nix {
-          inherit (comfyPkgs) installModels kritaModelInstalls modelTypes ecosystems baseModels;
+          inherit
+            (comfyPkgs)
+            installModels
+            kritaModelInstalls
+            modelTypes
+            ecosystems
+            baseModels
+            ;
           localResources = {
             # inherit (inputs) my-lora;
           };
@@ -46,7 +53,8 @@
             ;
         };
         comfyui = comfyPkgs.comfyui.override rec {
-          inherit models customNodes;
+          modelsDrv = comfyPkgs.mkModels models;
+          customNodesDrv = comfyPkgs.mkCustomNodes customNodes;
           outputPath = "/tmp/comfyui-output";
           extraArgs = [
             "--preview-method auto"
