@@ -35,20 +35,9 @@ The main outputs of the `flake.nix` at the moment are as follows:
 
 ## [ComfyUI](https://github.com/comfyanonymous/ComfyUI) ( A modular, node-based Stable Diffusion WebUI )
 
-If you want to quickly get up and running, you have the option of using the packages meant to serve the [Krita AI plugin](https://github.com/Acly/krita-ai-diffusion) (currently supporting v1.24.0), but the flake also provides ways to customise your setup.
-
 `export vendor=amd` or `export vendor=nvidia` depending on your GPU.
 
-### Pre-configured server
-
-If you want to quickly get started with a pre-configured setup, you can run these ones made to serve the Krita plugin (Krita is not required to use them):
-- `nix run github:nixified-ai/flake#krita-comfyui-server-${vendor}-minimal` - includes the bare minimum requirements
-- `nix run github:nixified-ai/flake#krita-comfyui-server-${vendor}` - includes same set of models as the plugin's own docker-based server
-- `nix run github:nixified-ai/flake#krita-comfyui-server-${vendor}-full` - a fully featured server to provide all functionality available through the plugin
-
-Note that the `comfyui-${vendor}` packages come with no models or custom nodes. They serve as a base to override with your own config, as shown below.
-
-### Custom setup
+### Configuring
 
 To run your own setup, you can override the base package and add what you need: `nix eval --impure --expr 'with (builtins.getFlake "github:nixified-ai/flake"); packages.x86_64-linux."comfyui-'${vendor}'".override { models = {...}; customNodes = {...}; extraArgs = ["--listen 0.0.0.0"]; ... }`.
 
@@ -59,13 +48,8 @@ See [./templates/comfyui/flake.nix](./templates/comfyui/flake.nix) to get an ide
 Since `nix flake show --legacy` is not particularly helpful, here is what is provided in `legacyPackages.x86_64-linux`:
 - `comfyui`
   - `installModels` - a helper which allows declaring models by their AIR (convenient for resources hosted on https://civitai.com), URL, or a local file (as flake input)
-  - `kritaModelInstalls` - the Krita plugin model set (see [./projects/comfyui/krita-models.nix](./projects/comfyui/krita-models.nix))
-    - `required` - the minimal set of models required for the plugin to work
-    - `default` - the same set as the [plugin's own managed server](https://github.com/Acly/krita-ai-diffusion/blob/main/ai_diffusion/cloud_client.py)
-    - `full` - default plus extra models necessary to use all available features of the plugin
   - `"${vendor}"` (anything gpu-vendor-dependent)
     - `customNodes` - a set of packaged custom nodes (see [./projects/comfyui/custom-nodes/default.nix](./projects/comfyui/custom-nodes/default.nix))
-    - `kritaCustomNodes` - the subset of `customNodes` relevant to the Krita plugin (see [./projects/comfyui/custom-nodes/krita-ai-plugin.nix](./projects/comfyui/custom-nodes/krita-ai-plugin.nix))
     - `python3Packages` - the python package set used by comfyui, so that new custom nodes can depend on the same package set
 
 ## [InvokeAI](https://github.com/invoke-ai/InvokeAI) ( A Stable Diffusion WebUI )

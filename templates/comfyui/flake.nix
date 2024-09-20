@@ -28,12 +28,11 @@
       }: let
         # vendor = "amd";
         vendor = "nvidia";
-        comfyPkgs = inputs'.nixified-ai.legacyPackages.comfyui."${vendor}";
+        comfyPkgs = inputs'.nixified-ai.legacyPackages.comfyuiPackages."${vendor}";
         models = import ./models.nix {
           inherit
             (comfyPkgs)
             installModels
-            kritaModelInstalls
             modelTypes
             ecosystems
             baseModels

@@ -2,8 +2,7 @@
   lib,
   linkFarm,
   comfyuiTypes,
-  customNodes,
-}: let
+}: customNodes: let
   t = lib.types // comfyuiTypes;
 
   # aggregate all custom nodes' dependencies

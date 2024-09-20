@@ -2,10 +2,14 @@
   lib,
   writeTextFile,
   writeScriptBin,
+  stdenv,
   python3,
   comfyui-unwrapped,
+  mkModels,
+  mkCustomNodes,
   modelsDrv ? null,
   customNodesDrv ? null,
+  customNodePkgs ? {},
   basePath ? "/var/lib/comfyui",
   inputPath ? "${basePath}/input",
   outputPath ? "${basePath}/output",
@@ -53,11 +57,18 @@
       --extra-model-paths-config ${extraModelPathsYaml} \
       ${builtins.concatStringsSep " \\\n  " (extraArgs ++ ["$@"])}
   '';
+  comfyui = stdenv.mkDerivation (finalAttrs: {
+    name = "comfyui";
+    src = executable;
+    buildPhase = ''
+      mkdir -p $out/bin
+      cp $src/bin/comfyui $out/bin/
+    '';
+    passthru = {
+      withModels = modelInstalls: finalAttrs.override {modelsDrv = mkModels modelInstalls;};
+      withCustomNodes = f: finalAttrs.override {customNodesDrv = mkCustomNodes (f customNodePkgs);};
+    };
+  });
 in
-  executable
-  // {
-    passthru =
-      builtins.trace customNodesDrv.outPath
-      unwrappedWithDeps.passthru
-      // {inherit customNodesDrv modelsDrv;};
-  }
+  comfyui.overrideAttrs
+  {passthru = lib.recursiveUpdate unwrappedWithDeps.passthru {inherit customNodesDrv modelsDrv;};}

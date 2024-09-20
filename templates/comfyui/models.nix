@@ -3,7 +3,6 @@
   ecosystems,
   baseModels,
   modelTypes,
-  kritaModelInstalls,
   installModels,
 }: let
   # implementation detail tip: if a resource does not require login, it is preferable to not supply it with an
@@ -11,17 +10,7 @@
   # WARNING: do not share the result of building comfyui if you add your token here; it will be added to the store.
   civitaiToken = null;
 in
-  {
-    inherit
-      (kritaModelInstalls.full)
-      "clip/clip_l.safetensors"
-      "clip/t5-v1_1-xxl-encoder-Q5_K_M.gguf"
-      "diffusion_models/flux1-schnell-Q4_0.gguf"
-      "loras/Hyper-SD15-8steps-CFG-lora.safetensors"
-      "loras/Hyper-SDXL-8steps-CFG-lora.safetensors"
-      ;
-  }
-  // installModels {
+  installModels {
     # "loras/example.safetensors" = {
     #   air = "urn:air:xxxxx:lora:civitai:000000@000000";
     #   sha256 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
